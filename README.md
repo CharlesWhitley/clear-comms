@@ -18,7 +18,24 @@ cd clear-comms-main
 
 # create venv
 python -m venv .venv
-.venv\Scripts\activate   # Windows
+.venv\Scripts\activate   # windows
 
 # install deps
 pip install -r requirements.txt
+```
+1. Prepare dataset
+```bash
+python vod_download.py
+python data_prep.py
+python split_dataset.py
+```
+
+2. Train model
+```bash
+python train_model.py
+```
+
+3. Run Inference
+```bash
+python inference.py --input input.wav --checkpoint checkpoints/model_best.pth --output output.wav
+```
