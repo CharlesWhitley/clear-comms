@@ -1,11 +1,10 @@
-# data_prep.py
 import os
 import random
 from pathlib import Path
 from pydub import AudioSegment
 import math
 
-# CONFIG
+# config
 GAMEPLAY_DIR = "audios_nocaster"
 CASTER_DIR = "audios_caster"
 PODCAST_DIR = "audios_podcast"  
@@ -23,7 +22,7 @@ def ensure_dirs():
 def to_wav_mono(aud: AudioSegment):
     aud = aud.set_frame_rate(SAMPLE_RATE)
     aud = aud.set_channels(1)
-    aud = aud.set_sample_width(2)  #16-bit
+    aud = aud.set_sample_width(2)  # 16-bit
     return aud
 
 def load_audio_files(folder):
@@ -39,7 +38,7 @@ def make_segments(audio, duration_ms):
     length = len(audio)
     for start in range(0, length, duration_ms):
         seg = audio[start:start + duration_ms]
-        if len(seg) < 1000:  # ignore too small
+        if len(seg) < 1000:  # ignore if too small
             continue
         segments.append(seg)
     return segments
@@ -72,7 +71,7 @@ def create_pairs():
                 if caster_segments:
                     caster_seg = random.choice(caster_segments)
 
-                    # randomly choose an offset to overlay caster audio 
+                    # randomly choose offset to overlay caster audio 
                     offset_ms = random.randint(0, max(0, len(seg) - 1000))
                     # randomly adjust gain so caster isn't unnaturally loud
                     gain_db = random.uniform(MIN_GAIN_DB, MAX_GAIN_DB)

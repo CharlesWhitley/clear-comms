@@ -1,6 +1,17 @@
-future==1.0.0
-yt-dlp==2025.3.25
-torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
-lightning==2.5.1
-pydub==0.25.1
-audioop-lts
+# core ML
+torch>=2.0.0
+torchaudio>=2.0.0
+torchmetrics>=1.0.0
+
+# audio processing
+pydub>=0.25.1
+soundfile>=0.12.1
+ffmpeg-python>=0.2.0
+
+# data/downloading
+yt-dlp>=2024.3.10
+numpy>=1.23.0
+scipy>=1.10.0
+
+# utilities
+tqdm>=4.65.0

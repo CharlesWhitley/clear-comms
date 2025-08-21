@@ -1,0 +1,11 @@
+{
+    "manifest_version": 3,
+    "name": "Clear Comms",
+    "version": "1.0",
+    "description": "Toggle caster voice removal in professional league of legends matches.",
+    "permissions": ["activeTab", "scripting"],
+    "action": {
+      "default_popup": "popup.html"
+    }
+  }
+  

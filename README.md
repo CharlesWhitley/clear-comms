@@ -1,5 +1,24 @@
-# clear-comms
+Clear Comms is a project that uses deep learning to separate caster/announcer voices from gameplay audio in livestreams. 
+Goal: give viewers the option to watch games with **pure gameplay audio** while muting commentary.
 
-1. Install dependencies "pip install -r requirements.txt"
-2. Install FFmpeg(https://github.com/BtbN/FFmpeg-Builds/releases) you MUST install the version listed: https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2025-03-22-13-02/ffmpeg-n6.1.2-27-ge16ff06adb-win64-gpl-shared-6.1.zip; See this issue for more inforamtion: https://github.com/pytorch/audio/issues/3789#issuecomment-2746032810
-3. Add FFmpeg to PATH
+---
+
+Features:
+- AI Audio Separation: Model trained on synthetic datasets of gameplay + overlaid caster audio.   
+- Custom Dataset Tools: Scripts to download VODs, mix in podcast/voice audio, and prepare train/validation splits.  
+- Inference: Run trained model on new livestream audio to generate caster-free output.  
+- Browser Extension (Prototype): Chrome extension with a simple enable/disable toggle. Injects into Twitch/YouTube tabs to eventually redirect audio through the model.  
+
+---
+
+Setup & Installation:
+```bash
+git clone https://github.com/<CharlesWhitley>/clear-comms.git
+cd clear-comms-main
+
+# create venv
+python -m venv .venv
+.venv\Scripts\activate   # Windows
+
+# install deps
+pip install -r requirements.txt

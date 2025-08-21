@@ -1,57 +1,49 @@
-import yt_dlp
-from pydub import AudioSegment
 import os
-NUM_VIDEO = 5
-THIRTY_SEC = 30000
-#Default sample rate is 44100hz
-"""""
-URLS_podcast = ['https://www.youtube.com/playlist?list=PLtiWkKVZkCXVu_3pkKsQviOZ7r_9b39JN']
+import subprocess
+from pathlib import Path
 
-ydl_opts_caster = {
-    'format': 'm4a',
-    # 'ffmpeg_location': 'C:/ffmpeg-master-latest-win64-gpl-shared/bin',
-    # # ℹ️ See help(yt_dlp.postprocessor) for a list of available Postprocessors and their arguments
-    # 'postprocessors': [{  # Extract audio using ffmpeg
-    #     'key': 'FFmpegExtractAudio',
-    #     'preferredcodec': 'wav',
-    # }],
-    'playliststart' : '1',
-    'playlistend' : NUM_VIDEO,
-    #'matchtitle' : r'^(?=.*\bvs\b)(?=.*\bGame\b).*',
-    'paths' : {'home' : 'audios_podcast'}
-}
+# config
+URLS_FILE = "vod_list.txt"       
+OUT_DIR = "audios_caster"   
+SAMPLE_RATE = 44100             
 
-URLS_no_caster = ['https://www.youtube.com/playlist?list=PLPUygacvheSPDBGj-gbgsYw8BsP7ETU_V']
+Path(OUT_DIR).mkdir(exist_ok=True)
 
-ydl_opts_nocaster = {
-    'format': 'm4a',
-    # 'ffmpeg_location': 'C:/ffmpeg-master-latest-win64-gpl-shared/bin',
-    # # ℹ️ See help(yt_dlp.postprocessor) for a list of available Postprocessors and their arguments
-    # 'postprocessors': [{  # Extract audio using ffmpeg
-    #     'key': 'FFmpegExtractAudio',
-    #     'preferredcodec': 'wav',
-    # }],
-    'playliststart' : '1',
-    'playlistend' : NUM_VIDEO,
-    'paths' : {'home' : 'audios_nocaster'}
-}
-with yt_dlp.YoutubeDL(ydl_opts_caster) as ydl:
-    error_code = ydl.download(URLS_podcast)
+def download_audio(url, out_dir):
+    # download
+    cmd = [
+        "yt-dlp",
+        "-x", "--audio-format", "wav",
+        "--audio-quality", "0",  # best quality
+        "-o", f"{out_dir}/%(title)s.%(ext)s",
+        url
+    ]
+    subprocess.run(cmd, check=True)
 
-with yt_dlp.YoutubeDL(ydl_opts_nocaster) as ydl:
-    error_code = ydl.download(URLS_no_caster)
-"""
+    # convert all wavs in folder to mono w fixed sample rate
+    for wav_file in Path(out_dir).glob("*.wav"):
+        tmp_file = wav_file.with_suffix(".tmp.wav")
+        cmd = [
+            "ffmpeg", "-y", "-i", str(wav_file),
+            "-ac", "1",                # mono
+            "-ar", str(SAMPLE_RATE),   # sample rate
+            str(tmp_file)
+        ]
+        subprocess.run(cmd, check=True)
+        wav_file.unlink()  # remove original
+        tmp_file.rename(wav_file)
 
-directory_podcast = os.listdir('audios_podcast')
-directory_nocaster = os.listdir('audios_nocaster')
+def main():
+    with open(URLS_FILE, "r") as f:
+        urls = [line.strip() for line in f if line.strip()]
 
-for i in range(NUM_VIDEO):
-    podcast_file = os.path.join('audios_podcast', directory_podcast[i+1])
-    nocaster_file = os.path.join('audios_nocaster', directory_nocaster[i+1])
+    for url in urls:
+        try:
+            print(f"Downloading {url}...")
+            download_audio(url, OUT_DIR)
+            print(f"Finished {url}")
+        except subprocess.CalledProcessError as e:
+            print(f"Error downloading {url}: {e}")
 
-    podcast = AudioSegment.from_file(podcast_file)
-    nocaster = AudioSegment.from_file(nocaster_file)
-
-    # Remove first 30s of podcast and overlay
-    overlapped = nocaster.overlay(podcast[THIRTY_SEC:])
-    overlapped.export(f'audios_caster/podcast+nocaster{i}.wav', format='wav')
+if __name__ == "__main__":
+    main()

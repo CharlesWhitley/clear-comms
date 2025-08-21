@@ -1,5 +1,22 @@
-*.m4a
+# python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+env/
+venv/
+
+# data
+dataset/
+audios_caster/
+audios_nocaster/
+audios_podcast/
+checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# audio files
 *.wav
-share
-*.json
-*.mp4
